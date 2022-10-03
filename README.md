@@ -1,0 +1,2 @@
+# goDiscordBot
+golangでdiscordのbotを作ってみたい。
