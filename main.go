@@ -29,6 +29,8 @@ func main() {
 	}
 
 	discord.AddHandler(onMessageCreate)
+	discord.AddHandler(onVoiceStateUpdate)
+
 	err = discord.Open()
 	if err != nil {
 		log.Fatal(err)
@@ -45,13 +47,40 @@ func main() {
 	return
 }
 
+func onVoiceStateUpdate(s *discordgo.Session, state *discordgo.VoiceStateUpdate){
+	o := state.BeforeUpdate
+	n := state
+
+	if o == nil {
+		fmt.Println("Old is NIL")
+	} else {
+		fmt.Println("Old")
+		fmt.Println(o.ChannelID)
+		fmt.Println(o.Member.Nick)
+	}
+
+	if n == nil {
+		fmt.Println("New is NIL")
+	} else {
+		fmt.Println("New")
+		fmt.Println(n.ChannelID)
+		fmt.Println(n.Member.Nick)
+	}
+
+	// 通話に参加した時はchannelIDが取れるけど、抜けた時は取れない
+}
+
 func onMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if m.ChannelID != "1026330056831807528" {
+		return
+	}
+
 	clientId := os.Getenv("CLIENT_ID")
 	u := m.Author
 	fmt.Println(m.ChannelID + " " + u.Username + "(" + u.ID + ")>" + m.Content)
 
 	if u.ID != clientId {
-		sendMessage(s, m.ChannelID, u.Mention()+"は？")
+		sendMessage(s, m.ChannelID, u.Mention()+"を援護！")
 		// sendReply(s, m.ChannelID, "testTest", m.Reference())
 	}
 }
